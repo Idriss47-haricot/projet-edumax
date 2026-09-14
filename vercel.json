@@ -3,12 +3,14 @@
   "builds": [
     {
       "src": "edumax/wsgi.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "15mb", "runtime": "python3.11" }
+      "use": "@vercel/python"
     },
     {
       "src": "build_files.sh",
-      "use": "@vercel/static-build"
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "staticfiles"
+      }
     }
   ],
   "routes": [
