@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "outputDirectory": "staticfiles",
   "builds": [
     {
       "src": "edumax/wsgi.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb"
+      }
     },
     {
       "src": "build_files.sh",
