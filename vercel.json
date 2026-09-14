@@ -3,8 +3,12 @@
   "builds": [
     {
       "src": "edumax/wsgi.py",
+<<<<<<< HEAD
       "use": "@vercel/python",
       "config": { "maxLambdaSize": "15mb" }
+=======
+      "use": "@vercel/python"
+>>>>>>> 671e6ff
     },
     {
       "src": "build_files.sh",
