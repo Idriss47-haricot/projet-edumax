@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o errexit
 
 # Créer le dossier staticfiles s'il n'existe pas encore
 mkdir -p staticfiles
