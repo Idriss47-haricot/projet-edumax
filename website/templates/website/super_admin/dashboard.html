@@ -4,7 +4,244 @@
 {% block title %}Administration centrale — {{ config.nom_site|default:"Academia Net" }}{% endblock %}
 {% block page_title %}Administration centrale{% endblock %}
 
-{% block extra_css %}
+{% block content %}
+
+<!-- ══ STATS GLOBALES ══════════════════════════════════════════════ -->
+<div class="sa-stats-grid">
+  <div class="sa-stat-card" style="--c:#1e3a8a;">
+    <div class="sa-stat-icon"><i class="fas fa-school"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ ecoles|length }}</span>
+      <span class="sa-stat-l">Écoles actives</span>
+    </div>
+    <a href="{% url 'super_admin_ecole_creer' %}" class="sa-stat-link">+ Ajouter</a>
+  </div>
+  <div class="sa-stat-card" style="--c:#7c3aed;">
+    <div class="sa-stat-icon"><i class="fas fa-users"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ utilisateurs|length }}</span>
+      <span class="sa-stat-l">Utilisateurs inscrits</span>
+    </div>
+    <a href="{% url 'super_admin_utilisateurs' %}" class="sa-stat-link">Gérer</a>
+  </div>
+  <div class="sa-stat-card" style="--c:#d97706;">
+    <div class="sa-stat-icon"><i class="fas fa-book-open"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ formations_count|default:0 }}</span>
+      <span class="sa-stat-l">Formations publiées</span>
+    </div>
+    <a href="{% url 'super_admin_gerer_formations' %}" class="sa-stat-link">Gérer</a>
+  </div>
+  <div class="sa-stat-card" style="--c:#059669;">
+    <div class="sa-stat-icon"><i class="fas fa-file-alt"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ epreuves_count|default:0 }}</span>
+      <span class="sa-stat-l">Épreuves publiées</span>
+    </div>
+    <a href="{% url 'super_admin_epreuves_dashboard' %}" class="sa-stat-link">Gérer</a>
+  </div>
+  <div class="sa-stat-card" style="--c:#dc2626;">
+    <div class="sa-stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ enseignants_count }}</span>
+      <span class="sa-stat-l">Enseignants / Formateurs</span>
+    </div>
+  </div>
+  <div class="sa-stat-card" style="--c:#0891b2;">
+    <div class="sa-stat-icon"><i class="fas fa-user-graduate"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ etudiants_count }}</span>
+      <span class="sa-stat-l">Étudiants</span>
+    </div>
+  </div>
+  <div class="sa-stat-card" style="--c:#16a34a;">
+    <div class="sa-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ revenus_total|default:0|floatformat:0 }}</span>
+      <span class="sa-stat-l">Revenus FCFA (plateforme)</span>
+    </div>
+  </div>
+  <div class="sa-stat-card" style="--c:#ea580c;">
+    <div class="sa-stat-icon"><i class="fas fa-flag"></i></div>
+    <div class="sa-stat-body">
+      <span class="sa-stat-n">{{ formations_en_attente|default:0 }}</span>
+      <span class="sa-stat-l">Formations en attente</span>
+    </div>
+    {% if formations_en_attente > 0 %}
+    <a href="{% url 'super_admin_gerer_formations' %}?statut=en_attente" class="sa-stat-link sa-urgent">Traiter !</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ══ ACCÈS RAPIDES ══════════════════════════════════════════════ -->
+<h6 class="sa-section-label">Modules de gestion</h6>
+<div class="sa-modules-grid">
+
+  <a href="{% url 'super_admin_configuration' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);">
+      <i class="fas fa-sliders-h"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Configuration plateforme</strong>
+      <span>Textes, couleurs, sections, accueil</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'super_admin_gerer_formations' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
+      <i class="fas fa-book-open"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Formations</strong>
+      <span>Valider, refuser, certifier, commissions</span>
+    </div>
+    {% if formations_en_attente > 0 %}
+    <span class="sa-notif-badge">{{ formations_en_attente }}</span>
+    {% endif %}
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'super_admin_epreuves_dashboard' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#059669,#10b981);">
+      <i class="fas fa-file-alt"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Épreuves</strong>
+      <span>Catalogue, rubriques, catégories, prix</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'super_admin_ecole_creer' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
+      <i class="fas fa-school"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Écoles</strong>
+      <span>Créer, gérer, abonnements</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'super_admin_utilisateurs' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">
+      <i class="fas fa-users-cog"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Utilisateurs</strong>
+      <span>Comptes, rôles, suspensions</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'super_admin_abonnement_creer' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#dc2626,#ef4444);">
+      <i class="fas fa-tags"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Abonnements</strong>
+      <span>Packs écoles, tarifs, limites</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="{% url 'configurer_messagerie' %}" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#475569,#64748b);">
+      <i class="fas fa-comments"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Messagerie</strong>
+      <span>Polling, nettoyage, sécurité</span>
+    </div>
+    <i class="fas fa-chevron-right sa-module-arrow"></i>
+  </a>
+
+  <a href="/admin/" target="_blank" class="sa-module">
+    <div class="sa-module-icon" style="background:linear-gradient(135deg,#111827,#374151);">
+      <i class="fas fa-database"></i>
+    </div>
+    <div class="sa-module-body">
+      <strong>Admin Django</strong>
+      <span>Base de données brute</span>
+    </div>
+    <i class="fas fa-external-link-alt sa-module-arrow"></i>
+  </a>
+
+</div>
+
+<!-- ══ DEUX COLONNES : Écoles récentes + Alertes ════════════════════ -->
+<div class="sa-two-col">
+
+  <!-- Écoles récentes -->
+  <div class="sa-panel">
+    <div class="sa-panel-header">
+      <span><i class="fas fa-school me-2 text-primary"></i>Écoles récentes</span>
+      <a href="{% url 'super_admin_ecole_creer' %}" class="sa-panel-action">+ Ajouter</a>
+    </div>
+    <div class="sa-panel-body">
+      {% for ecole in ecoles|slice:":6" %}
+      <div class="sa-list-item">
+        <div class="sa-list-avatar">
+          {% if ecole.logo %}
+          <img src="{{ ecole.logo.url }}" alt="{{ ecole.nom }}">
+          {% else %}
+          <i class="fas fa-school"></i>
+          {% endif %}
+        </div>
+        <div class="sa-list-info">
+          <strong>{{ ecole.nom|truncatechars:28 }}</strong>
+          <span>{{ ecole.ville }}, {{ ecole.pays }}</span>
+        </div>
+        <a href="{% url 'super_admin_ecole_modifier' ecole.id %}" class="sa-list-btn">
+          <i class="fas fa-pen"></i>
+        </a>
+      </div>
+      {% empty %}
+      <p class="sa-empty">Aucune école enregistrée.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Packs abonnements -->
+  <div class="sa-panel">
+    <div class="sa-panel-header">
+      <span><i class="fas fa-tags me-2 text-warning"></i>Packs d'abonnement</span>
+      <a href="{% url 'super_admin_abonnement_creer' %}" class="sa-panel-action">+ Créer</a>
+    </div>
+    <div class="sa-panel-body">
+      {% for abo in abonnements %}
+      <div class="sa-list-item">
+        <div class="sa-list-avatar" style="background:#fef3c7;color:#d97706;">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="sa-list-info">
+          <strong>{{ abo.nom }}</strong>
+          <span>{{ abo.max_etudiants }} étud. · {{ abo.max_cours }} cours</span>
+        </div>
+        <span class="sa-badge {% if abo.actif %}sa-badge-success{% else %}sa-badge-muted{% endif %}">
+          {% if abo.actif %}Actif{% else %}Inactif{% endif %}
+        </span>
+      </div>
+      {% empty %}
+      <p class="sa-empty">Aucun pack créé.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ GRAPHIQUE ═══════════════════════════════════════════════════ -->
+<div class="sa-panel mt-4">
+  <div class="sa-panel-header">
+    <span><i class="fas fa-chart-bar me-2 text-primary"></i>Vue d'ensemble de la plateforme</span>
+  </div>
+  <div class="sa-panel-body">
+    <canvas id="saChart" height="120"></canvas>
+  </div>
+</div>
+
+<!-- ══ STYLES ═════════════════════════════════════════════════════ -->
 <style>
 /* Stats grid */
 .sa-stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
@@ -70,277 +307,39 @@
 
 .sa-empty { text-align:center; padding:20px; color:#9ca3af; font-size:0.85rem; }
 </style>
-{% endblock %}
-
-{% block content %}
-
-<!-- ══ STATS GLOBALES ══════════════════════════════════════════════ -->
-<div class="sa-stats-grid">
-  <div class="sa-stat-card" style="--c:#1e3a8a;">
-    <div class="sa-stat-icon"><i class="fas fa-school"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ ecoles|length }}</span>
-      <span class="sa-stat-l">Écoles actives</span>
-    </div>
-    <a href="{% url 'super_admin_ecole_creer' %}" class="sa-stat-link">+ Ajouter</a>
-  </div>
-  <div class="sa-stat-card" style="--c:#7c3aed;">
-    <div class="sa-stat-icon"><i class="fas fa-users"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ utilisateurs|length }}</span>
-      <span class="sa-stat-l">Utilisateurs inscrits</span>
-    </div>
-    <a href="{% url 'super_admin_utilisateurs' %}" class="sa-stat-link">Gérer</a>
-  </div>
-  <div class="sa-stat-card" style="--c:#d97706;">
-    <div class="sa-stat-icon"><i class="fas fa-book-open"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ formations_count|default:0 }}</span>
-      <span class="sa-stat-l">Formations publiées</span>
-    </div>
-    <a href="{% url 'super_admin_gerer_formations' %}" class="sa-stat-link">Gérer</a>
-  </div>
-  <div class="sa-stat-card" style="--c:#059669;">
-    <div class="sa-stat-icon"><i class="fas fa-file-alt"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ epreuves_count|default:0 }}</span>
-      <span class="sa-stat-l">Épreuves publiées</span>
-    </div>
-    <a href="{% url 'super_admin_epreuves_dashboard' %}" class="sa-stat-link">Gérer</a>
-  </div>
-  <div class="sa-stat-card" style="--c:#dc2626;">
-    <div class="sa-stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ enseignants_count }}</span>
-      <span class="sa-stat-l">Enseignants / Formateurs</span>
-    </div>
-  </div>
-  <div class="sa-stat-card" style="--c:#0891b2;">
-    <div class="sa-stat-icon"><i class="fas fa-user-graduate"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ etudiants_count }}</span>
-      <span class="sa-stat-l">Étudiants</span>
-    </div>
-  </div>
-  <div class="sa-stat-card" style="--c:#16a34a;">
-    <div class="sa-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ revenus_total|default:0|floatformat:0 }}</span>
-      <span class="sa-stat-l">Revenus FCFA (plateforme)</span>
-    </div>
-  </div>
-  <div class="sa-stat-card" style="--c:#ea580c;">
-    <div class="sa-stat-icon"><i class="fas fa-flag"></i></div>
-    <div class="sa-stat-body">
-      <span class="sa-stat-n">{{ formations_en_attente|default:0 }}</span>
-      <span class="sa-stat-l">Formations en attente</span>
-    </div>
-    {% if formations_en_attente > 0 %}
-    <a href="{% url 'super_admin_gerer_formations' %}?statut=en_attente" class="sa-stat-link sa-urgent">Traiter !</a>
-    {% endif %}
-  </div>
-</div>
-
-<!-- ══ ACCÈS RAPIDES ══════════════════════════════════════════════ -->
-<h6 class="sa-section-label">Modules de gestion</h6>
-<div class="sa-modules-grid">
-
-  <a href="{% url 'super_admin_configuration' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#1e3a8a,#3b82f6);">
-      <i class="fas fa-sliders-h"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Configuration plateforme</strong>
-      <span>Textes, couleurs, sections, accueil</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'super_admin_gerer_formations' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#d97706,#f59e0b);">
-      <i class="fas fa-book-open"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Formations</strong>
-      <span>Valider, refuser, certifier, commissions</span>
-    </div>
-    {% if formations_en_attente > 0 %}
-    <span class="sa-notif-badge">{{ formations_en_attente }}</span>
-    {% endif %}
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'super_admin_epreuves_dashboard' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#059669,#10b981);">
-      <i class="fas fa-file-alt"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Épreuves</strong>
-      <span>Catalogue, rubriques, catégories, prix</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'super_admin_ecole_creer' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">
-      <i class="fas fa-school"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Écoles</strong>
-      <span>Créer, gérer, abonnements</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'super_admin_utilisateurs' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#0891b2,#06b6d4);">
-      <i class="fas fa-users-cog"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Utilisateurs</strong>
-      <span>Comptes, rôles, suspensions</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'super_admin_abonnement_creer' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#dc2626,#ef4444);">
-      <i class="fas fa-tags"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Abonnements</strong>
-      <span>Packs écoles, tarifs, limites</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="{% url 'configurer_messagerie' %}" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#475569,#64748b);">
-      <i class="fas fa-comments"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Messagerie</strong>
-      <span>Polling, nettoyage, sécurité</span>
-    </div>
-    <i class="fas fa-chevron-right sa-module-arrow"></i>
-  </a>
-
-  <a href="/admin/" target="_blank" class="sa-module">
-    <div class="sa-module-icon" style="background:linear-gradient(135deg,#111827,#374151);">
-      <i class="fas fa-database"></i>
-    </div>
-    <div class="sa-module-body">
-      <strong>Admin Django</strong>
-      <span>Base de données brute</span>
-    </div>
-    <i class="fas fa-external-link-alt sa-module-arrow"></i>
-  </a>
-
-</div>
-
-<!-- ══ DEUX COLONNES : Écoles récentes + Alertes ════════════════════ -->
-<div class="sa-two-col">
-
-  <!-- Écoles récentes -->
-  <div class="sa-panel">
-    <div class="sa-panel-header">
-      <span><i class="fas fa-school me-2 text-primary"></i>Écoles récentes</span>
-      <a href="{% url 'super_admin_ecole_creer' %}" class="sa-panel-action">+ Ajouter</a>
-    </div>
-    <div class="sa-panel-body">
-      {% for ecole in ecoles|slice:":6" %}
-      <div class="sa-list-item">
-        <div class="sa-list-avatar">
-          {% if ecole.logo %}
-          <img src="{{ ecole.logo.url }}" alt="{{ ecole.nom }}">
-          {% else %}
-          <i class="fas fa-school"></i>
-          {% endif %}
-        </div>
-        <div class="sa-list-info">
-          <strong>{{ ecole.nom|truncatechars:28 }}</strong>
-          <span>{{ ecole.ville }}, {{ ecole.pays }}</span>
-        </div>
-        <a href="{% url 'super_admin_ecole_modifier' ecole.id %}" class="sa-list-btn">
-          <i class="fas fa-pen"></i>
-        </a>
-      </div>
-      {% empty %}
-      <p class="sa-empty">Aucune école enregistrée.</p>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- Packs abonnements -->
-  <div class="sa-panel">
-    <div class="sa-panel-header">
-      <span><i class="fas fa-tags me-2 text-warning"></i>Packs d'abonnement</span>
-      <a href="{% url 'super_admin_abonnement_creer' %}" class="sa-panel-action">+ Créer</a>
-    </div>
-    <div class="sa-panel-body">
-      {% for abo in abonnements %}
-      <div class="sa-list-item">
-        <div class="sa-list-avatar" style="background:#fef3c7;color:#d97706;">
-          <i class="fas fa-star"></i>
-        </div>
-        <div class="sa-list-info">
-          <strong>{{ abo.nom }}</strong>
-          <span>{{ abo.max_etudiants }} étud. · {{ abo.max_cours }} cours</span>
-        </div>
-        <span class="sa-badge {% if abo.actif %}sa-badge-success{% else %}sa-badge-muted{% endif %}">
-          {% if abo.actif %}Actif{% else %}Inactif{% endif %}
-        </span>
-      </div>
-      {% empty %}
-      <p class="sa-empty">Aucun pack créé.</p>
-      {% endfor %}
-    </div>
-  </div>
-
-</div>
-
-<!-- ══ GRAPHIQUE ═══════════════════════════════════════════════════ -->
-<div class="sa-panel mt-4">
-  <div class="sa-panel-header">
-    <span><i class="fas fa-chart-bar me-2 text-primary"></i>Vue d'ensemble de la plateforme</span>
-  </div>
-  <div class="sa-panel-body">
-    <canvas id="saChart" height="120"></canvas>
-  </div>
-</div>
 
 <!-- ══ CHART ═══════════════════════════════════════════════════════ -->
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 new Chart(document.getElementById('saChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Écoles', 'Enseignants', 'Étudiants', 'Formations publiées', 'Épreuves', 'En attente'],
-    datasets: [{
-      label: 'Nombre',
-      data: [
-        {{ ecoles|length }},
-        {{ enseignants_count }},
-        {{ etudiants_count }},
-        {{ formations_count|default:0 }},
-        {{ epreuves_count|default:0 }},
-        {{ formations_en_attente|default:0 }}
-      ],
-      backgroundColor: ['#1e3a8a','#d97706','#0891b2','#059669','#10b981','#dc2626'],
-      borderRadius: 8,
-      borderSkipped: false,
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: { legend: { display: false } },
-    scales: {
-      y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
-      x: { grid: { display: false } }
-    }
-  }
+  type: 'bar',
+  data: {
+    labels: ['Écoles', 'Enseignants', 'Étudiants', 'Formations publiées', 'Épreuves', 'En attente'],
+    datasets: [{
+      label: 'Nombre',
+      data: [
+        {{ ecoles|length }},
+        {{ enseignants_count }},
+        {{ etudiants_count }},
+        {{ formations_count|default:0 }},
+        {{ epreuves_count|default:0 }},
+        {{ formations_en_attente|default:0 }}
+      ],
+      backgroundColor: ['#1e3a8a','#d97706','#0891b2','#059669','#10b981','#dc2626'],
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
+      x: { grid: { display: false } }
+    }
+  }
 });
 </script>
 {% endblock %}
